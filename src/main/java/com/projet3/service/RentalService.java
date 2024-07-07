@@ -17,7 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class RentalService {
@@ -71,8 +70,6 @@ public class RentalService {
         createRentalDto.setDescription(description);
         Rental rental = mapper.toRentalEntity(createRentalDto,user,picturePath);
         rental.setUser(user);
-
-
 
         rentalRepository.save(rental);
     }

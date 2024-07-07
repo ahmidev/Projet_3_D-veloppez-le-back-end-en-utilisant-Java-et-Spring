@@ -1,17 +1,14 @@
 package com.projet3.controller;
 
-import com.projet3.dto.MessageDTO;
 import com.projet3.dto.SendMessageDTO;
 import com.projet3.service.MessageService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/api/messages")
 public class MessageController {

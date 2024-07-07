@@ -1,7 +1,6 @@
 package com.projet3.service;
 
 import com.projet3.dto.Mapper;
-import com.projet3.dto.MessageDTO;
 import com.projet3.dto.SendMessageDTO;
 import com.projet3.model.Message;
 import com.projet3.model.Rental;
@@ -31,7 +30,7 @@ public class MessageService {
 
     @Transactional
     public SendMessageDTO sendMessage(SendMessageDTO sendMessageDTO) {
-        System.out.println("je suis dans le service" + sendMessageDTO);
+
         User user = userRepository.findById(sendMessageDTO.getUserId())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + sendMessageDTO.getUserId()));
 
@@ -48,16 +47,7 @@ public class MessageService {
         return mapper.toSendMessageDTO(savedMessage);
     }
 
-    private MessageDTO convertToDTO(Message message) {
-        MessageDTO messageDTO = new MessageDTO();
-        messageDTO.setId(message.getId());
-        messageDTO.setUserId(message.getUser().getId());
-        messageDTO.setRentalId(message.getRental().getId());
-        messageDTO.setMessage(message.getMessage());
-        messageDTO.setCreatedAt(message.getCreatedAt());
-        messageDTO.setUpdatedAt(message.getUpdatedAt());
-        return messageDTO;
-    }
+
 }
 
 

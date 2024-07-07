@@ -1,16 +1,14 @@
 package com.projet3.service;
 
-import com.projet3.dto.UserDTO;
 import com.projet3.dto.UserLoginDTO;
 import com.projet3.dto.UserRegisterDTO;
 import com.projet3.model.AuthSuccess;
 import com.projet3.model.User;
 import com.projet3.repository.UserRepository;
 import com.projet3.security.JwtTokenProvider;
-import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 @Service
 public class AuthService {
@@ -49,15 +47,7 @@ public class AuthService {
         return new AuthSuccess(token);
     }
 
-    public UserDTO getUserDTO(User currentUser) {
-        UserDTO userDTO = new UserDTO();
-        userDTO.setId(currentUser.getId());
-        userDTO.setEmail(currentUser.getEmail());
-        userDTO.setName(currentUser.getName());
-        userDTO.setCreatedAt(currentUser.getCreatedAt());
-        userDTO.setUpdatedAt(currentUser.getUpdatedAt());
-        return userDTO;
-    }
+
 
     public User findByEmail(String email) {
         return userRepository.findByEmail(email).orElse(null);

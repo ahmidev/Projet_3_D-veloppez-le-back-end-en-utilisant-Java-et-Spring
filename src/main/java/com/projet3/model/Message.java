@@ -17,6 +17,7 @@ public class Message {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
     @Column(length = 2000)
     private String message;
 
@@ -28,9 +29,11 @@ public class Message {
     @UpdateTimestamp
     private Instant updatedAt;
 
+
     @ManyToOne
     @JoinColumn(name="user_id", nullable = true)
     private User user;
+
 
     @ManyToOne
     @JoinColumn(name="rental_id", nullable = true)

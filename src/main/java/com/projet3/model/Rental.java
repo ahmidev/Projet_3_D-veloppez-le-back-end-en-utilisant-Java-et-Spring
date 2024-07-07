@@ -1,6 +1,7 @@
 package com.projet3.model;
 
 import lombok.Data;
+import jakarta.validation.constraints.NotBlank;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -18,13 +19,18 @@ public class Rental {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
     private String name;
+
 
     private Double surface;
 
+
     private Double price;
 
+
     private String picture;
+
 
     @Column(length = 2000)
     private String description;

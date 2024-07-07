@@ -1,14 +1,12 @@
 package com.projet3.controller;
 
 import com.projet3.dto.UserDTO;
-import com.projet3.dto.UserRegisterDTO;
 import com.projet3.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
