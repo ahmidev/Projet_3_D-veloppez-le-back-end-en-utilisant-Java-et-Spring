@@ -18,6 +18,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -30,7 +31,6 @@ public class AuthController {
         this.userService = userService;
 
     }
-    @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping("/register")
     public ResponseEntity<AuthSuccess> register(@Valid @RequestBody UserRegisterDTO userRegisterDTO) {
         try {
@@ -48,7 +48,6 @@ public class AuthController {
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping("/login")
     public ResponseEntity<AuthSuccess> login(@Valid @RequestBody UserLoginDTO userLoginDTO) {
         try {
@@ -58,7 +57,6 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new AuthSuccess("Invalid email or password"));
         }
     }
-    @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping("/me")
     public ResponseEntity<UserDTO> getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

@@ -29,5 +29,5 @@ public class UserDTO {
     @UpdateTimestamp
     private Instant updatedAt;
 
-    // getters and setters
+
 }
