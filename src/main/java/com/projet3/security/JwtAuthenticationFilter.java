@@ -2,6 +2,8 @@ package com.projet3.security;
 
 import com.projet3.service.UserDetailsServiceImpl;
 import io.jsonwebtoken.ExpiredJwtException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,6 +22,8 @@ import java.io.IOException;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
+    private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
+
     @Autowired
     private JwtTokenProvider tokenProvider;
 
@@ -29,27 +33,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        String uri = request.getRequestURI();
-        if (uri.equals("/api/auth/register") || uri.equals("/api/auth/login") || uri.equals("/api/rentals")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
         try {
             String jwt = getJwtFromRequest(request);
-            System.out.println("Extracted JWT: " + jwt); // Debugging line
             if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
                 String userEmail = tokenProvider.getUserEmailFromJWT(jwt);
 
                 UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
                 if (userDetails != null) {
-                    var authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities());
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             }
         } catch (ExpiredJwtException ex) {
+            logger.warn("Expired JWT token", ex);
             request.setAttribute("exception", ex);
+        } catch (Exception ex) {
+            logger.error("Could not set user authentication in security context", ex);
         }
         filterChain.doFilter(request, response);
     }
@@ -62,4 +63,3 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return null;
     }
 }
-

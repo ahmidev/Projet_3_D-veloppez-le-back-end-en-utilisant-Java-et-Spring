@@ -46,7 +46,6 @@ public class AuthService {
             throw new UsernameNotFoundException("Invalid email or password");
         }
         String token = tokenProvider.generateToken(existingUser);
-        System.out.println("Generated Token: ****************************************" + token);
         return new AuthSuccess(token);
     }
 

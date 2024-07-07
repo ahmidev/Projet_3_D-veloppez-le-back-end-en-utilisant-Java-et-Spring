@@ -1,6 +1,7 @@
 package com.projet3.controller;
 
 import com.projet3.dto.MessageDTO;
+import com.projet3.dto.SendMessageDTO;
 import com.projet3.service.MessageService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +20,10 @@ public class MessageController {
     private MessageService messageService;
 
     @PostMapping
-    public ResponseEntity<?> sendMessage(@Valid @RequestBody MessageDTO messageDTO) {
+    public ResponseEntity<?> sendMessage(@Valid @RequestBody SendMessageDTO sendMessageDTO) {
         try {
-            MessageDTO savedMessageDTO = messageService.sendMessage(messageDTO);
-            return ResponseEntity.ok(savedMessageDTO);
+            SendMessageDTO savedSendMessageDTO = messageService.sendMessage(sendMessageDTO);
+            return ResponseEntity.ok(savedSendMessageDTO);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\": \"Error sending message\"}");
         }

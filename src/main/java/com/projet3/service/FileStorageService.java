@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Objects;
 
 @Service
 public class FileStorageService {
@@ -17,14 +18,12 @@ public class FileStorageService {
     private String uploadDir;
 
     public String storeFile(MultipartFile file) throws IOException {
-        // Ensure the directory exists
         Path directoryPath = Paths.get(uploadDir);
         if (!Files.exists(directoryPath)) {
             Files.createDirectories(directoryPath);
         }
-
-        Path copyLocation = directoryPath.resolve(file.getOriginalFilename());
+        Path copyLocation = directoryPath.resolve(Objects.requireNonNull(file.getOriginalFilename()));
         Files.copy(file.getInputStream(), copyLocation, StandardCopyOption.REPLACE_EXISTING);
-        return copyLocation.toString();
+        return file.getOriginalFilename();
     }
 }

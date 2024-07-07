@@ -30,10 +30,9 @@ public class AuthController {
         this.userService = userService;
 
     }
-
+    @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping("/register")
     public ResponseEntity<AuthSuccess> register(@Valid @RequestBody UserRegisterDTO userRegisterDTO) {
-        System.out.println("AVANT TOUT LE RESTE  Generated Token: ********************************" );
         try {
             AuthSuccess authSuccess = authService.register(userRegisterDTO);
             return ResponseEntity.ok(authSuccess);
@@ -49,7 +48,7 @@ public class AuthController {
         }
     }
 
-
+    @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping("/login")
     public ResponseEntity<AuthSuccess> login(@Valid @RequestBody UserLoginDTO userLoginDTO) {
         try {
@@ -59,12 +58,10 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new AuthSuccess("Invalid email or password"));
         }
     }
-
+    @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping("/me")
     public ResponseEntity<UserDTO> getCurrentUser() {
-        System.out.println("***************" + "je suis dans le me");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println("***************" + authentication + "****************");
         if (authentication == null || !authentication.isAuthenticated()) {
             return ResponseEntity.status(401).build();
         }

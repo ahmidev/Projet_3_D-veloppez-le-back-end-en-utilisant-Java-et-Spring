@@ -1,6 +1,10 @@
 package com.projet3.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.Column;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
 
@@ -14,7 +18,15 @@ public class UserDTO {
 
     private String name;
 
+
+    @Column(name = "created_at")
+    @JsonProperty("created_at")
+    @CreationTimestamp
     private Instant createdAt;
+
+    @Column(name = "updated_at")
+    @JsonProperty("updated_at")
+    @UpdateTimestamp
     private Instant updatedAt;
 
     // getters and setters

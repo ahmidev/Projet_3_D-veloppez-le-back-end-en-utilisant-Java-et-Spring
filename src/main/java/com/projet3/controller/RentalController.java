@@ -1,12 +1,10 @@
 package com.projet3.controller;
 
 import com.projet3.dto.RentalDTO;
+import com.projet3.dto.UpdateRentalDto;
 import com.projet3.service.RentalService;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,8 +20,8 @@ public class RentalController {
     @Autowired
     private RentalService rentalService;
 
-    @GetMapping
-    public List<RentalDTO> getAllRentals() {
+    @GetMapping("")
+    public Map<String, List<RentalDTO>> getAllRentals() {
         return rentalService.getAllRentals();
     }
 
@@ -48,15 +46,9 @@ public class RentalController {
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<RentalDTO> updateRental(@PathVariable Long id,
-                                                  @RequestPart("rental") @Valid RentalDTO rentalDTO,
-                                                  @RequestPart("picture") MultipartFile picture) throws IOException {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return ResponseEntity.status(401).build();
-        }
+    public ResponseEntity<RentalDTO> updateRental(@PathVariable Long id, UpdateRentalDto updateRentalDto) throws IOException {
 
-        String currentPrincipalName = authentication.getName();
-        return rentalService.updateRental(id, rentalDTO, picture, currentPrincipalName);
+
+        return rentalService.updateRental(id, updateRentalDto);
     }
 }

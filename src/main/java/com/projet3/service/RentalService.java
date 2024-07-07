@@ -1,6 +1,9 @@
 package com.projet3.service;
 
+import com.projet3.dto.CreateRentalDto;
+import com.projet3.dto.Mapper;
 import com.projet3.dto.RentalDTO;
+import com.projet3.dto.UpdateRentalDto;
 import com.projet3.model.Rental;
 import com.projet3.model.User;
 import com.projet3.repository.RentalRepository;
@@ -13,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,15 +29,18 @@ public class RentalService {
     private UserRepository userRepository;
 
     @Autowired
+    private Mapper mapper;
+
+    @Autowired
     private FileStorageService fileStorageService;
 
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
 
-    public List<RentalDTO> getAllRentals() {
-        return rentalRepository.findAll().stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+    public Map<String, List<RentalDTO>> getAllRentals() {
+        return Map.of("rentals", rentalRepository.findAll().stream()
+                .map(mapper::toRentalDTO)
+                .toList());
     }
 
     public ResponseEntity<RentalDTO> getRentalById(Long id) {
@@ -41,79 +48,46 @@ public class RentalService {
         if (rental == null) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(convertToDTO(rental));
+        return ResponseEntity.ok(mapper.toRentalDTO(rental));
     }
 
     public void createRental(String name, Double surface, Double price, String description, MultipartFile picture, Long userId) throws IOException {
         System.out.println("TEST :" + userId);
+        String picturePath = "";
         if (userId == null) {
             throw new IllegalArgumentException("User ID must not be null************");
         }
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + userId));
-        RentalDTO rentalDTO = new RentalDTO();
-        rentalDTO.setName(name);
-        rentalDTO.setSurface(surface);
-        rentalDTO.setPrice(price);
-        rentalDTO.setDescription(description);
-        rentalDTO.setUserId(userId);
-        Rental rental = convertToEntity(rentalDTO);
-        rental.setUser(user);
 
         if (picture != null && !picture.isEmpty()) {
-            String picturePath = fileStorageService.storeFile(picture);
-            rental.setPicture(picturePath);
+            picturePath = fileStorageService.storeFile(picture);
+            System.out.println("Stored file path: " + picturePath);
         }
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + userId));
+        CreateRentalDto createRentalDto = new CreateRentalDto();
+        createRentalDto.setName(name);
+        createRentalDto.setSurface(surface);
+        createRentalDto.setPrice(price);
+        createRentalDto.setDescription(description);
+        Rental rental = mapper.toRentalEntity(createRentalDto,user,picturePath);
+        rental.setUser(user);
+
+
 
         rentalRepository.save(rental);
     }
 
 
-    public ResponseEntity<RentalDTO> updateRental(Long id, RentalDTO rentalDTO, MultipartFile picture, String email) throws IOException {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
-
+    public ResponseEntity<RentalDTO> updateRental(Long id, UpdateRentalDto updateRentalDto) throws IOException {
         Rental rental = rentalRepository.findById(id).orElse(null);
         if (rental == null) {
             return ResponseEntity.notFound().build();
         }
 
-        rental.setName(rentalDTO.getName());
-        rental.setSurface(rentalDTO.getSurface());
-        rental.setPrice(rentalDTO.getPrice());
-        rental.setDescription(rentalDTO.getDescription());
-
-        if (picture != null && !picture.isEmpty()) {
-            String picturePath = fileStorageService.storeFile(picture);
-            rental.setPicture(picturePath);
-        }
-
+        mapper.toRentalEntity(updateRentalDto, rental);
         Rental updatedRental = rentalRepository.save(rental);
-        return ResponseEntity.ok(convertToDTO(updatedRental));
+        return ResponseEntity.ok(mapper.toRentalDTO(updatedRental));
     }
 
-    private RentalDTO convertToDTO(Rental rental) {
-        RentalDTO rentalDTO = new RentalDTO();
-        rentalDTO.setName(rental.getName());
-        rentalDTO.setSurface(rental.getSurface());
-        rentalDTO.setPrice(rental.getPrice());
-        rentalDTO.setPicture(rental.getPicture());
-        rentalDTO.setDescription(rental.getDescription());
-        rentalDTO.setCreatedAt(rental.getCreatedAt());
-        rentalDTO.setUpdatedAt(rental.getUpdatedAt());
-        rentalDTO.setUserId(rental.getUser().getId());
-        return rentalDTO;
-    }
 
-    private Rental convertToEntity(RentalDTO rentalDTO) {
-        Rental rental = new Rental();
-        rental.setName(rentalDTO.getName());
-        rental.setSurface(rentalDTO.getSurface());
-        rental.setPrice(rentalDTO.getPrice());
-        rental.setDescription(rentalDTO.getDescription());
-        rental.setCreatedAt(rentalDTO.getCreatedAt());
-        rental.setUpdatedAt(rentalDTO.getUpdatedAt());
-        rental.setUser(userDetailsService.loadUserById(rentalDTO.getUserId()));
-        return rental;
-    }
 }

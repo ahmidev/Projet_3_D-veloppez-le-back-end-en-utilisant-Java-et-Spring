@@ -1,6 +1,8 @@
 package com.projet3.service;
 
+import com.projet3.dto.Mapper;
 import com.projet3.dto.MessageDTO;
+import com.projet3.dto.SendMessageDTO;
 import com.projet3.model.Message;
 import com.projet3.model.Rental;
 import com.projet3.model.User;
@@ -22,24 +24,28 @@ public class MessageService {
     private RentalRepository rentalRepository;
 
     @Autowired
+    private Mapper mapper;
+
+    @Autowired
     private MessageRepository messageRepository;
 
     @Transactional
-    public MessageDTO sendMessage(MessageDTO messageDTO) {
-        User user = userRepository.findById(messageDTO.getUserId())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + messageDTO.getUserId()));
+    public SendMessageDTO sendMessage(SendMessageDTO sendMessageDTO) {
+        System.out.println("je suis dans le service" + sendMessageDTO);
+        User user = userRepository.findById(sendMessageDTO.getUserId())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + sendMessageDTO.getUserId()));
 
-        Rental rental = rentalRepository.findById(messageDTO.getRentalId())
-                .orElseThrow(() -> new RuntimeException("Rental not found with id: " + messageDTO.getRentalId()));
+        Rental rental = rentalRepository.findById(sendMessageDTO.getRentalId())
+                .orElseThrow(() -> new RuntimeException("Rental not found with id: " + sendMessageDTO.getRentalId()));
 
         Message message = new Message();
         message.setUser(user);
         message.setRental(rental);
-        message.setMessage(messageDTO.getMessage());
+        message.setMessage(sendMessageDTO.getMessage());
 
         Message savedMessage = messageRepository.save(message);
 
-        return convertToDTO(savedMessage);
+        return mapper.toSendMessageDTO(savedMessage);
     }
 
     private MessageDTO convertToDTO(Message message) {

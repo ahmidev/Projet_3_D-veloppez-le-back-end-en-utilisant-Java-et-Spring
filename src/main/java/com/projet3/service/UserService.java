@@ -4,6 +4,7 @@ import com.projet3.dto.UserDTO;
 import com.projet3.dto.UserRegisterDTO;
 import com.projet3.model.User;
 import com.projet3.repository.UserRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -11,13 +12,11 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public UserDTO registerUser(UserRegisterDTO userRegisterDTO) {
         User user = new User();
@@ -34,7 +33,8 @@ public class UserService {
     }
 
     public UserDTO getUserByEmail(String email) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found with email %s ".formatted(email)));
         return convertToDTO(user);
     }
 
