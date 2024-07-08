@@ -10,6 +10,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+/**
+ * Service for handling authentication related operations.
+ */
 @Service
 public class AuthService {
 
@@ -17,12 +20,26 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider tokenProvider;
 
+    /**
+     * Constructs an AuthService with the specified dependencies.
+     *
+     * @param userRepository the user repository
+     * @param passwordEncoder the password encoder
+     * @param tokenProvider the JWT token provider
+     */
     public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtTokenProvider tokenProvider) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.tokenProvider = tokenProvider;
     }
 
+    /**
+     * Registers a new user with the given registration details.
+     *
+     * @param userRegisterDTO the user registration data transfer object
+     * @return an AuthSuccess object containing the generated JWT token
+     * @throws IllegalArgumentException if the email is already in use
+     */
     public AuthSuccess register(UserRegisterDTO userRegisterDTO) {
         if (userRepository.existsByEmail(userRegisterDTO.getEmail())) {
             throw new IllegalArgumentException("Email already in use");
@@ -38,6 +55,13 @@ public class AuthService {
     }
 
 
+    /**
+     * Logs in a user with the given login details.
+     *
+     * @param userLoginDTO the user login data transfer object
+     * @return an AuthSuccess object containing the generated JWT token
+     * @throws UsernameNotFoundException if the email or password is invalid
+     */
     public AuthSuccess login(UserLoginDTO userLoginDTO) {
         User existingUser = findByEmail(userLoginDTO.getEmail());
         if (existingUser == null || !passwordEncoder.matches(userLoginDTO.getPassword(), existingUser.getPassword())) {
@@ -48,7 +72,12 @@ public class AuthService {
     }
 
 
-
+    /**
+     * Finds a user by their email address.
+     *
+     * @param email the email address to search for
+     * @return the User object if found, otherwise null
+     */
     public User findByEmail(String email) {
         return userRepository.findByEmail(email).orElse(null);
     }
