@@ -13,6 +13,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
+/**
+ * Service for handling message related operations.
+ */
 @Service
 public class MessageService {
 
@@ -28,6 +32,15 @@ public class MessageService {
     @Autowired
     private MessageRepository messageRepository;
 
+
+    /**
+     * Sends a message and saves it to the database.
+     *
+     * @param sendMessageDTO the data transfer object containing the message details
+     * @return a SendMessageDTO object containing the saved message details
+     * @throws UsernameNotFoundException if the user with the given ID is not found
+     * @throws RuntimeException if the rental with the given ID is not found
+     */
     @Transactional
     public SendMessageDTO sendMessage(SendMessageDTO sendMessageDTO) {
 
