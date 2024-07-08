@@ -18,6 +18,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Service for handling rental related operations.
+ */
 @Service
 public class RentalService {
 
@@ -36,12 +39,23 @@ public class RentalService {
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
 
+    /**
+     * Retrieves all rentals.
+     *
+     * @return a map containing a list of RentalDTO objects
+     */
     public Map<String, List<RentalDTO>> getAllRentals() {
         return Map.of("rentals", rentalRepository.findAll().stream()
                 .map(mapper::toRentalDTO)
                 .toList());
     }
 
+    /**
+     * Retrieves a rental by its ID.
+     *
+     * @param id the ID of the rental
+     * @return a ResponseEntity containing the RentalDTO if found, otherwise a 404 response
+     */
     public ResponseEntity<RentalDTO> getRentalById(Long id) {
         Rental rental = rentalRepository.findById(id).orElse(null);
         if (rental == null) {
@@ -50,6 +64,20 @@ public class RentalService {
         return ResponseEntity.ok(mapper.toRentalDTO(rental));
     }
 
+
+    /**
+     * Creates a new rental with the given details.
+     *
+     * @param name the name of the rental
+     * @param surface the surface area of the rental
+     * @param price the price of the rental
+     * @param description the description of the rental
+     * @param picture the picture of the rental
+     * @param userId the ID of the user creating the rental
+     * @throws IOException if an I/O error occurs during file storage
+     * @throws IllegalArgumentException if the user ID is null
+     * @throws UsernameNotFoundException if the user with the given ID is not found
+     */
     public void createRental(String name, Double surface, Double price, String description, MultipartFile picture, Long userId) throws IOException {
         System.out.println("TEST :" + userId);
         String picturePath = "";
@@ -74,7 +102,14 @@ public class RentalService {
         rentalRepository.save(rental);
     }
 
-
+    /**
+     * Updates an existing rental with the given details.
+     *
+     * @param id the ID of the rental to update
+     * @param updateRentalDto the data transfer object containing the updated rental details
+     * @return a ResponseEntity containing the updated RentalDTO if the rental is found, otherwise a 404 response
+     * @throws IOException if an I/O error occurs during the update process
+     */
     public ResponseEntity<RentalDTO> updateRental(Long id, UpdateRentalDto updateRentalDto) throws IOException {
         Rental rental = rentalRepository.findById(id).orElse(null);
         if (rental == null) {
